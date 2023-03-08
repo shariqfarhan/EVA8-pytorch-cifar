@@ -6,7 +6,7 @@ from tqdm import tqdm
 import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
 
-def train(model, device, train_loader, optimizer, criterion, l1_penalty = True, lambda_l1 = 1e-5):
+def train(model, device, train_loader, optimizer, criterion, train_losses, train_acc, l1_penalty = True, lambda_l1 = 1e-5):
     model.train()
     pbar = tqdm(train_loader)
     correct = 0
@@ -32,7 +32,7 @@ def train(model, device, train_loader, optimizer, criterion, l1_penalty = True, 
                 l1 = l1 + p.abs().sum()
         loss = loss + lambda_l1 * l1
 
-#         train_losses.append(loss)
+        train_losses.append(loss)
 
         # Backpropagation
         loss.backward()
@@ -45,4 +45,4 @@ def train(model, device, train_loader, optimizer, criterion, l1_penalty = True, 
         processed += len(data)
 
         pbar.set_description(desc= f'Loss={loss.item()} Batch_id={batch_idx} Accuracy={100*correct/processed:0.2f}')
-#         train_acc.append(100*correct/processed)
+        train_acc.append(100*correct/processed)
