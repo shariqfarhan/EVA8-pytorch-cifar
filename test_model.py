@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-def test(model, device, test_loader):
+def test(model, device, test_loader, test_losses, test_acc):
     model.eval()
     test_loss = 0
     correct = 0
@@ -16,13 +16,13 @@ def test(model, device, test_loader):
 
 
     test_loss /= len(test_loader.dataset)
-#     test_losses.append(test_loss)
+    test_losses.append(test_loss)
 
     print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
         test_loss, correct, len(test_loader.dataset),
         100. * correct / len(test_loader.dataset)))
     
-#     test_acc.append(100. * correct / len(test_loader.dataset))
+    test_acc.append(100. * correct / len(test_loader.dataset))
 
 def mis_classified_images(model, device, test_loader):
     model.eval()
@@ -45,8 +45,8 @@ def mis_classified_images(model, device, test_loader):
                 # To avoid double counting we don't add 1 here. If the above line of code ``` correct += pred.eq(target.view_as(pred)).sum().item() ```
                 # wasn't there, we would add 1 here
                 else:
-                    incorr_X.append(data)
-                    incorr_y.append(target)
+                    incorr_X.append(data[idx])
+                    incorr_y.append(target[idx])
                     incorr_argmax.append(torch.argmax(i))
 
     test_loss /= len(test_loader.dataset)
