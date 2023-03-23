@@ -6,6 +6,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader
 
 from torchinfo import summary
+from torch_lr_finder import LRFinder
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -243,4 +244,20 @@ def denormalize(x, mean, std):
         t.mul_(s).add_(m)
     # B, 3, H, W
     return torch.clamp(ten, 0, 1).permute( 0, 1, 2)
+
+
+
+
+def find_lr(net, optimizer, criterion, train_loader):
+    """Find learning rate for using One Cyclic LRFinder
+    Args:
+        net (instace): torch instace of defined model
+        optimizer (instance): optimizer to be used
+        criterion (instance): criterion to be used for calculating loss
+        train_loader (instance): torch dataloader instace for trainig set
+    """
+    lr_finder = LRFinder(net, optimizer, criterion, device="cuda")
+    lr_finder.range_test(train_loader, end_lr=10, num_iter=100, step_mode="exp")
+    lr_finder.plot()
+    lr_finder.reset()
     
